@@ -23,13 +23,7 @@ import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { Chat } from '@/lib/db/schema';
 
-type Props = {
-	params: {
-		'chat-id': string;
-	};
-};
-
-const ChatPage = ({ params }: Props) => {
+const ChatPage = () => {
 	const { userId } = useAuth();
 	const { chatid: chatId }: { chatid: string } = useParams();
 
@@ -47,8 +41,6 @@ const ChatPage = ({ params }: Props) => {
 			return response.data;
 		},
 	});
-
-	// if (isLoading) return <div>Loading...</div>;
 
 	const _chats = data?.chats;
 	const curChat = data?.curChat as Chat;
@@ -69,7 +61,7 @@ const ChatPage = ({ params }: Props) => {
 									<BreadcrumbList>
 										<BreadcrumbItem>
 											<BreadcrumbPage className='line-clamp-6'>
-												{curChat?.pdfName || ' '}
+												{curChat?.pdfName}
 											</BreadcrumbPage>
 										</BreadcrumbItem>
 									</BreadcrumbList>

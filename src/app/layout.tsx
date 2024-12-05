@@ -32,10 +32,11 @@ export default function RootLayout({
 				<html lang='en'>
 					<body
 						className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+						suppressHydrationWarning
 					>
 						{children}
+						<Toaster />
 					</body>
-					<Toaster />
 				</html>
 			</Providers>
 		</ClerkProvider>
