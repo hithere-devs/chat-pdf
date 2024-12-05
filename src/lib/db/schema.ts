@@ -19,8 +19,6 @@ export const chats = pgTable('chats', {
 	fileKey: text('file_key').notNull(),
 });
 
-export type Chat = typeof chats.$inferSelect;
-
 export const messages = pgTable('messages', {
 	id: serial('id').primaryKey(),
 	chatId: integer('chat_id')
@@ -31,3 +29,5 @@ export const messages = pgTable('messages', {
 	role: userSystemEnum('role').notNull(),
 	createdAt: timestamp('created_at').notNull().defaultNow(),
 });
+
+export type Chat = typeof chats.$inferSelect;

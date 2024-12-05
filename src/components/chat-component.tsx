@@ -1,15 +1,31 @@
 'use client';
 
 import { Send } from 'lucide-react';
-import React, { useEffect } from 'react';
-import { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+
 import { Message, useChat } from 'ai/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { messages as _messages } from '@/lib/db/schema';
 
-type Props = {};
+type Props = {
+	fileKey: string;
+	chatId: number;
+};
 
-const ChatComponent = (props: Props) => {
+const ChatComponent = ({ fileKey, chatId }: Props) => {
+	const { data } = useQuery({
+		queryKey: ['chat', chatId],
+		queryFn: async () => {
+			const response = await axios.post('/api/get-messages', {
+				chatId,
+			});
+			return response.data;
+		},
+	});
+
 	const chatRef = useRef<HTMLDivElement | null>(null);
 	const [isResponseLoading, setIsResponseLoading] = useState(false);
 
@@ -17,13 +33,14 @@ const ChatComponent = (props: Props) => {
 		useChat({
 			api: '/api/chat',
 			body: {
-				// accountId,
+				fileKey,
+				chatId,
 			},
 			onError: (error) => {
 				console.error('Error in Chat', error);
 				setIsResponseLoading(false);
 			},
-			initialMessages: [],
+			initialMessages: data || [],
 		});
 
 	const adjustScrollInChat = () => {
@@ -57,10 +74,9 @@ const ChatComponent = (props: Props) => {
 							className={cn(
 								'z-10 mt-2 max-w-[250px] break-words rounded-2xl bg-gray-200 dark:bg-gray-800',
 								{
-									'self-end text-gray-900 dark:text-gray-100':
-										message.role === 'user',
-									'self-start !bg-blue-500 text-white':
+									'self-start text-gray-900 dark:text-gray-100':
 										message.role === 'assistant',
+									'self-end !bg-blue-500 text-white': message.role === 'user',
 								}
 							)}
 							layoutId={`container-[${messages.length - 1} ]`}

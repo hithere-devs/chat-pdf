@@ -1,3 +1,5 @@
+'use client';
+
 import { db } from '@/lib/db';
 import { chats } from '@/lib/db/schema';
 import { auth } from '@clerk/nextjs/server';
@@ -44,7 +46,6 @@ const ChatPage = async ({ params }: Props) => {
 	return (
 		<div className='flex max-h-screen overflow-scroll '>
 			<div className='flex w-full max-h-screen overflow-scroll'>
-				{/* chat sidebar */}
 				<SidebarProvider>
 					<AppSidebar chats={_chats} chatId={parseInt(chatId)} />
 					<SidebarInset>
@@ -69,14 +70,17 @@ const ChatPage = async ({ params }: Props) => {
 								</Button>
 							</div>
 						</header>
-						{/* pdf viewer */}
+
 						<div className='flex items-end'>
 							<div className='max-h-screen h-[92vh] overflow-scroll flex-[5]'>
 								<PDFViewer pdfUrl={curChat.pdfUrl} />
 							</div>
-							{/* chat component */}
+
 							<div className='flex-[3] p-4 h-[92vh]'>
-								<ChatComponent />
+								<ChatComponent
+									fileKey={curChat.fileKey}
+									chatId={parseInt(chatId)}
+								/>
 							</div>
 						</div>
 					</SidebarInset>

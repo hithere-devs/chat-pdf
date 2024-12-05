@@ -1,26 +1,9 @@
 'use client';
 
 import {
-	ArrowUpRight,
-	MessageCircle,
-	MoreHorizontal,
-	PlusIcon,
-	StarOff,
-	Trash2,
-} from 'lucide-react';
-
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
 	SidebarGroup,
 	SidebarGroupLabel,
 	SidebarMenu,
-	SidebarMenuAction,
 	SidebarMenuButton,
 	SidebarMenuItem,
 	useSidebar,
@@ -30,7 +13,8 @@ import { Chat } from '@/lib/db/schema';
 import Link from 'next/link';
 
 export function NavFavorites({ chats }: { chats: Chat[] }) {
-	const { isMobile } = useSidebar();
+	// const { isMobile } =
+	useSidebar();
 
 	return (
 		<SidebarGroup className='group-data-[collapsible=icon]:hidden'>
