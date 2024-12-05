@@ -1,11 +1,6 @@
 'use client';
 
-import { db } from '@/lib/db';
-import { chats } from '@/lib/db/schema';
-import { auth } from '@clerk/nextjs/server';
-import { eq } from 'drizzle-orm';
-import { redirect } from 'next/navigation';
-import React from 'react';
+import { useParams } from 'next/navigation';
 import { AppSidebar } from '@/components/app-sidebar';
 import {
 	Breadcrumb,
@@ -23,6 +18,10 @@ import { PlusIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import PDFViewer from '@/components/pdf-viewer';
 import ChatComponent from '@/components/chat-component';
+import { useAuth } from '@clerk/nextjs';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
+import { Chat } from '@/lib/db/schema';
 
 type Props = {
 	params: {
@@ -30,24 +29,37 @@ type Props = {
 	};
 };
 
-const ChatPage = async ({ params }: Props) => {
-	const { userId } = await auth();
-	const chatId = params['chat-id'];
+const ChatPage = ({ params }: Props) => {
+	const { userId } = useAuth();
+	const { chatid: chatId }: { chatid: string } = useParams();
 
-	if (!userId) return redirect('/sign-in');
+	// if (!userId) return redirect('/sign-in');
 
-	const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
-	const curChat = _chats?.find((c) => c.id === parseInt(chatId));
+	// const _chats = await db.select().from(chats).where(eq(chats.userId, userId));
 
-	if (!_chats || !curChat) {
-		return redirect('/');
-	}
+	const { data, isLoading } = useQuery({
+		queryKey: ['dddd'],
+		queryFn: async () => {
+			const response = await axios.post('/api/get-chats', {
+				userId,
+				chatId,
+			});
+			return response.data;
+		},
+	});
+
+	// if (isLoading) return <div>Loading...</div>;
+
+	const _chats = data?.chats;
+	const curChat = data?.curChat as Chat;
+
+	if (isLoading) return <div>Loading...</div>;
 
 	return (
 		<div className='flex max-h-screen overflow-scroll '>
 			<div className='flex w-full max-h-screen overflow-scroll'>
 				<SidebarProvider>
-					<AppSidebar chats={_chats} chatId={parseInt(chatId)} />
+					<AppSidebar chats={_chats || []} chatId={parseInt(chatId)} />
 					<SidebarInset>
 						<header className='flex h-14 shrink-0 items-center gap-2'>
 							<div className='flex flex-1 items-center gap-2 px-3'>
@@ -57,7 +69,7 @@ const ChatPage = async ({ params }: Props) => {
 									<BreadcrumbList>
 										<BreadcrumbItem>
 											<BreadcrumbPage className='line-clamp-6'>
-												{curChat.pdfName}
+												{curChat?.pdfName || ' '}
 											</BreadcrumbPage>
 										</BreadcrumbItem>
 									</BreadcrumbList>
@@ -71,18 +83,20 @@ const ChatPage = async ({ params }: Props) => {
 							</div>
 						</header>
 
-						<div className='flex items-end'>
-							<div className='max-h-screen h-[92vh] overflow-scroll flex-[5]'>
-								<PDFViewer pdfUrl={curChat.pdfUrl} />
-							</div>
+						{curChat && (
+							<div className='flex items-end'>
+								<div className='max-h-screen h-[92vh] overflow-scroll flex-[5]'>
+									<PDFViewer pdfUrl={curChat.pdfUrl} />
+								</div>
 
-							<div className='flex-[3] p-4 h-[92vh]'>
-								<ChatComponent
-									fileKey={curChat.fileKey}
-									chatId={parseInt(chatId)}
-								/>
+								<div className='flex-[3] p-4 h-[92vh]'>
+									<ChatComponent
+										fileKey={curChat.fileKey}
+										chatId={parseInt(chatId)}
+									/>
+								</div>
 							</div>
-						</div>
+						)}
 					</SidebarInset>
 				</SidebarProvider>
 			</div>

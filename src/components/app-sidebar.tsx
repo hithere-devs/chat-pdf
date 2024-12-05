@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/sidebar';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
-	chats: Chat[];
+	chats: Chat[] | [];
 	chatId: number;
 }
 
