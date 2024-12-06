@@ -27,6 +27,8 @@ import {
 	SidebarHeader,
 	SidebarRail,
 } from '@/components/ui/sidebar';
+import Image from 'next/image';
+import Link from 'next/link';
 
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 	chats: Chat[] | [];
@@ -65,11 +67,11 @@ export function AppSidebar({ chats, chatId, ...props }: AppSidebarProps) {
 				url: '#',
 				icon: Settings2,
 			},
-			{
-				title: 'Trash',
-				url: '#',
-				icon: Trash2,
-			},
+			// {
+			// 	title: 'Trash',
+			// 	url: '#',
+			// 	icon: Trash2,
+			// },
 			{
 				title: 'Help',
 				url: '#',
@@ -82,13 +84,22 @@ export function AppSidebar({ chats, chatId, ...props }: AppSidebarProps) {
 		<Sidebar className='border-r-0' {...props}>
 			<SidebarHeader>
 				{/* <TeamSwitcher teams={data.teams} /> */}
-				<NavUser user={data.user} />
+				{/* <NavUser user={data.user} /> */}
+				<Link href={'/'} className='flex gap-2 px-1 py-2 items-center mt-0.5'>
+					<Image src='/logo.png' alt='logo' width={25} height={25} />
+					<span className='text-md font-bold font-sans'>Doc Assist</span>
+				</Link>
 				<NavMain items={data.navMain} />
 			</SidebarHeader>
 			<SidebarContent>
 				<NavFavorites chats={chats} />
 				{/* <NavWorkspaces workspaces={data.workspaces} /> */}
-				<NavSecondary items={data.navSecondary} className='mt-auto' />
+
+				<NavSecondary
+					items={data.navSecondary}
+					user={data.user}
+					className='mt-auto'
+				/>
 			</SidebarContent>
 			<SidebarRail />
 		</Sidebar>

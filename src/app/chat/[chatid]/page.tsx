@@ -24,6 +24,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import Link from 'next/link';
 
 const ChatPage = () => {
 	const { userId } = useAuth();
@@ -94,10 +95,12 @@ const ChatPage = () => {
 								</Breadcrumb>
 							</div>
 							<div className='ml-auto px-3'>
-								<Button variant='default'>
-									<span>New Chat</span>
-									<PlusIcon />
-								</Button>
+								<Link href={'/'}>
+									<Button variant='default'>
+										<span>New Chat</span>
+										<PlusIcon />
+									</Button>
+								</Link>
 							</div>
 						</header>
 

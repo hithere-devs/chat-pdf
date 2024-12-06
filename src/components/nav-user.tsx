@@ -6,6 +6,7 @@ import {
 	ChevronsUpDown,
 	CreditCard,
 	LogOut,
+	Settings2,
 	Sparkles,
 } from 'lucide-react';
 
@@ -25,20 +26,25 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from '@/components/ui/sidebar';
+import { SignOutButton, useUser } from '@clerk/nextjs';
+import Link from 'next/link';
 
 export function NavUser({
-	user,
+	// user,
+	...props
 }: {
 	user: {
 		name: string;
 		email: string;
 		avatar: string;
 	};
-}) {
+} & React.ComponentPropsWithoutRef<typeof SidebarMenu>) {
 	const { isMobile } = useSidebar();
 
+	const { isLoaded, isSignedIn, user } = useUser();
+
 	return (
-		<SidebarMenu>
+		<SidebarMenu {...props}>
 			<SidebarMenuItem>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -47,12 +53,17 @@ export function NavUser({
 							className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
 						>
 							<Avatar className='h-8 w-8 rounded-lg'>
-								<AvatarImage src={user.avatar} alt={user.name} />
+								<AvatarImage
+									src={user?.imageUrl}
+									alt={user?.fullName as string}
+								/>
 								<AvatarFallback className='rounded-lg'>CN</AvatarFallback>
 							</Avatar>
 							<div className='grid flex-1 text-left text-sm leading-tight'>
-								<span className='truncate font-semibold'>{user.name}</span>
-								<span className='truncate text-xs'>{user.email}</span>
+								<span className='truncate font-semibold'>{user?.fullName}</span>
+								<span className='truncate text-xs'>
+									{user?.emailAddresses[0].emailAddress}
+								</span>
 							</div>
 							<ChevronsUpDown className='ml-auto size-4' />
 						</SidebarMenuButton>
@@ -66,12 +77,19 @@ export function NavUser({
 						<DropdownMenuLabel className='p-0 font-normal'>
 							<div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
 								<Avatar className='h-8 w-8 rounded-lg'>
-									<AvatarImage src={user.avatar} alt={user.name} />
+									<AvatarImage
+										src={user?.imageUrl}
+										alt={user?.fullName as string}
+									/>
 									<AvatarFallback className='rounded-lg'>CN</AvatarFallback>
 								</Avatar>
 								<div className='grid flex-1 text-left text-sm leading-tight'>
-									<span className='truncate font-semibold'>{user.name}</span>
-									<span className='truncate text-xs'>{user.email}</span>
+									<span className='truncate font-semibold'>
+										{user?.fullName}
+									</span>
+									<span className='truncate text-xs'>
+										{user?.emailAddresses[0].emailAddress}
+									</span>
 								</div>
 							</div>
 						</DropdownMenuLabel>
@@ -84,24 +102,30 @@ export function NavUser({
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<BadgeCheck />
-								Account
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<CreditCard />
-								Billing
-							</DropdownMenuItem>
+							<Link href={'/account'}>
+								<DropdownMenuItem>
+									<BadgeCheck />
+									Account
+								</DropdownMenuItem>
+							</Link>
+							<Link href={'/settings'}>
+								<DropdownMenuItem>
+									<Settings2 />
+									Settings
+								</DropdownMenuItem>
+							</Link>
 							<DropdownMenuItem>
 								<Bell />
 								Notifications
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem>
-							<LogOut />
-							Log out
-						</DropdownMenuItem>
+						<SignOutButton>
+							<DropdownMenuItem>
+								<LogOut />
+								Log out
+							</DropdownMenuItem>
+						</SignOutButton>
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</SidebarMenuItem>
