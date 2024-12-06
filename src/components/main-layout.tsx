@@ -1,6 +1,5 @@
 'use client';
 
-import { Chat } from '@/lib/db/schema';
 import { AppSidebar } from './app-sidebar';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from './ui/sidebar';
 import axios from 'axios';
@@ -33,11 +32,10 @@ export function MainLayoutComp({ children }: { children: React.ReactNode }) {
 		queryFn: async () => {
 			const response = await axios.post('/api/get-chats', {
 				userId,
-				chatId,
 			});
 			return response.data;
 		},
-		enabled: !!userId && !!chatId,
+		enabled: !!userId,
 		staleTime: 1000 * 60 * 50, // Cache for 50 minutes
 		refetchOnWindowFocus: false,
 		refetchInterval: 1000 * 60 * 50,

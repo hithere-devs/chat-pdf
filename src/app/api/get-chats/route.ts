@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { chats } from '@/lib/db/schema';
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 
 export const POST = async (req: Request, res: Response) => {
 	try {
@@ -9,14 +9,8 @@ export const POST = async (req: Request, res: Response) => {
 		const _chats = await db
 			.select()
 			.from(chats)
-			.where(eq(chats.userId, userId));
-		// const curChat = _chats.find((c) => c.id === parseInt(chatId));
-
-		// if (!curChat || _chats.length === 0) {
-		// 	throw new Error(`${_chats[0]?.id}`, {
-		// 		cause: 'Current chat not found',
-		// 	});
-		// }
+			.where(eq(chats.userId, userId))
+			.orderBy(desc(chats.createdAt));
 
 		if (_chats.length === 0) {
 			return NextResponse.json({ error: 'No chats found' }, { status: 400 });
