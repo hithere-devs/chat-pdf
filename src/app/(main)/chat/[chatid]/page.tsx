@@ -40,7 +40,7 @@ const ChatPage = () => {
 	}, [isError, error]);
 
 	const LoadingSkeleton = () => (
-		<div className='w-full h-[92vh] flex'>
+		<div className='w-full h-[92vh] flex max-sm:flex-col'>
 			<div className='flex-[5] p-4'>
 				<Skeleton className='w-full h-full' />
 			</div>
@@ -56,11 +56,11 @@ const ChatPage = () => {
 				<LoadingSkeleton />
 			) : (
 				data?.chat && (
-					<div className='flex items-end'>
-						<div className='max-h-screen h-[92vh] overflow-scroll flex-[5]'>
+					<div className='flex items-end max-sm:flex-col max-sm:w-full'>
+						<div className='max-h-screen h-[92vh] overflow-scroll sm:flex-[5] max-sm:w-screen max-sm:h-[50vh]'>
 							<PDFViewer pdfUrl={data.chat.pdfUrl} />
 						</div>
-						<div className='flex-[3] p-4 h-[92vh]'>
+						<div className='sm:flex-[3] max-sm:w-screen max-sm:h-[42vh] p-4 h-[92vh]'>
 							<ChatComponent
 								fileKey={data.chat.fileKey}
 								chatId={parseInt(chatId)}

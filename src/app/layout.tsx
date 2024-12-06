@@ -19,6 +19,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
 	// title: 'Chat PDF',
 	// description: 'An app to talk to your pdf with the magic of AI',
+	icons: [{ rel: 'icon', url: '/favicon.ico' }],
 };
 
 export default function RootLayout({
