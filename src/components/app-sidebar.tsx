@@ -54,17 +54,17 @@ export function AppSidebar({ chats, chatId, ...props }: AppSidebarProps) {
 				url: '#',
 				icon: Sparkles,
 			},
-			{
-				title: 'Home',
-				url: '#',
-				icon: Home,
-				isActive: true,
-			},
+			// {
+			// 	title: 'Home',
+			// 	url: '#',
+			// 	icon: Home,
+			// 	isActive: true,
+			// },
 		],
 		navSecondary: [
 			{
 				title: 'Settings',
-				url: '#',
+				url: '/settings',
 				icon: Settings2,
 			},
 			// {
@@ -92,7 +92,7 @@ export function AppSidebar({ chats, chatId, ...props }: AppSidebarProps) {
 				<NavMain items={data.navMain} />
 			</SidebarHeader>
 			<SidebarContent>
-				<NavFavorites chats={chats} />
+				<NavFavorites chats={chats} chatId={chatId} />
 				{/* <NavWorkspaces workspaces={data.workspaces} /> */}
 
 				<NavSecondary

@@ -2,21 +2,50 @@
 
 import { Send } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-
 import { Message, useChat } from 'ai/react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { messages as _messages } from '@/lib/db/schema';
+import { Skeleton } from './ui/skeleton';
 
 type Props = {
 	fileKey: string;
 	chatId: number;
 };
 
+const ChatComponentSkeleton = () => {
+	return (
+		<div className='h-full flex flex-col items-center justify-end'>
+			<div className='flex w-full flex-col gap-3 overflow-y-scroll pb-3'>
+				{/* Message bubbles skeleton */}
+				<div className='flex flex-col gap-4'>
+					{[...Array(3)].map((_, i) => (
+						<div key={i} className='flex flex-col gap-3'>
+							{/* Assistant message skeleton */}
+							<div className='self-start'>
+								<Skeleton className='h-[40px] w-[200px] rounded-2xl' />
+							</div>
+							{/* User message skeleton */}
+							<div className='self-end'>
+								<Skeleton className='h-[40px] w-[180px] rounded-2xl' />
+							</div>
+						</div>
+					))}
+				</div>
+			</div>
+
+			{/* Input box skeleton */}
+			<div className='w-full p-4'>
+				<Skeleton className='h-9 w-full rounded-full' />
+			</div>
+		</div>
+	);
+};
+
 const ChatComponent = ({ fileKey, chatId }: Props) => {
-	const { data } = useQuery({
+	const { data, isLoading } = useQuery({
 		queryKey: ['chat', chatId],
 		queryFn: async () => {
 			const response = await axios.post('/api/get-messages', {
@@ -29,19 +58,18 @@ const ChatComponent = ({ fileKey, chatId }: Props) => {
 	const chatRef = useRef<HTMLDivElement | null>(null);
 	const [isResponseLoading, setIsResponseLoading] = useState(false);
 
-	const { input, handleInputChange, handleSubmit, messages, isLoading } =
-		useChat({
-			api: '/api/chat',
-			body: {
-				fileKey,
-				chatId,
-			},
-			onError: (error) => {
-				console.error('Error in Chat', error);
-				setIsResponseLoading(false);
-			},
-			initialMessages: data || [],
-		});
+	const { input, handleInputChange, handleSubmit, messages } = useChat({
+		api: '/api/chat',
+		body: {
+			fileKey,
+			chatId,
+		},
+		onError: (error) => {
+			console.error('Error in Chat', error);
+			setIsResponseLoading(false);
+		},
+		initialMessages: data || [],
+	});
 
 	const adjustScrollInChat = () => {
 		if (chatRef.current) {
@@ -58,6 +86,11 @@ const ChatComponent = ({ fileKey, chatId }: Props) => {
 			setIsResponseLoading(false);
 		}
 	}, [messages]);
+
+	// this isLoading is from the useQuery hook not useChat hook take care
+	if (isLoading) {
+		return <ChatComponentSkeleton />;
+	}
 
 	return (
 		<div className='h-full flex flex-col items-center justify-end'>

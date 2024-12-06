@@ -114,10 +114,12 @@ export function NavUser({
 									Settings
 								</DropdownMenuItem>
 							</Link>
-							<DropdownMenuItem>
-								<Bell />
-								Notifications
-							</DropdownMenuItem>
+							<Link href={'/notifications'}>
+								<DropdownMenuItem>
+									<Bell />
+									Notifications
+								</DropdownMenuItem>
+							</Link>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<SignOutButton>

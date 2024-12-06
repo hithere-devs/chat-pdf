@@ -12,7 +12,13 @@ import {
 import { Chat } from '@/lib/db/schema';
 import Link from 'next/link';
 
-export function NavFavorites({ chats }: { chats: Chat[] }) {
+export function NavFavorites({
+	chats,
+	chatId,
+}: {
+	chats: Chat[];
+	chatId: number;
+}) {
 	// const { isMobile } =
 	useSidebar();
 
@@ -24,7 +30,7 @@ export function NavFavorites({ chats }: { chats: Chat[] }) {
 			<SidebarMenu>
 				{chats.map((item) => (
 					<SidebarMenuItem key={item.id}>
-						<SidebarMenuButton asChild>
+						<SidebarMenuButton asChild isActive={item.id == chatId}>
 							<Link href={`/chat/${item.id}`} title={item.pdfName}>
 								{/* <span>
 									<MessageCircle />
