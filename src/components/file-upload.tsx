@@ -2,12 +2,13 @@
 
 import { uploadToS3 } from '@/lib/s3';
 import { useMutation } from '@tanstack/react-query';
-import { Inbox, Loader2 } from 'lucide-react';
+import { ArrowUp, CircleArrowUp, Inbox, Loader2, Plus } from 'lucide-react';
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
+import { Button } from './ui/button';
 
 const FileUpload = () => {
 	const router = useRouter();
@@ -86,9 +87,12 @@ const FileUpload = () => {
 				) : (
 					<>
 						<Inbox className='w-10 h-10 text-blue-500 ' />
-						<p className='mt-2 text-sm text-gray-500'>
-							Drag and drop your PDF here
+						<p className='my-4 text-sm text-gray-500'>
+							Click to upload, or drag PDF here
 						</p>
+						<Button className='bg-blue-500 hover:bg-blue-200 hover:text-black'>
+							Upload File <CircleArrowUp />
+						</Button>
 					</>
 				)}
 			</div>
