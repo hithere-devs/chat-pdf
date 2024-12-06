@@ -50,7 +50,7 @@ export default async function Home() {
 							</Link>
 						)}
 						{isAuth && (
-							<Link href={'/settings'}>
+							<Link href={'/account'}>
 								<Button variant={'outline'}>Manage Subscription</Button>
 							</Link>
 						)}

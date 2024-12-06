@@ -8,8 +8,8 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 export default function SettingsPage() {
 	const [temperature, setTemperature] = useState(0.7);
@@ -24,7 +24,7 @@ export default function SettingsPage() {
 				<div className='space-y-6'>
 					{/* Model Selection */}
 					<div className='space-y-2 max-w-xl'>
-						<label className='text-sm font-medium'>Select Model</label>
+						<label className='text-sm font-medium'>Select Chat Model</label>
 						<Select defaultValue='gpt-3.5-turbo'>
 							<SelectTrigger>
 								<SelectValue placeholder='Select model' />
@@ -94,6 +94,7 @@ export default function SettingsPage() {
 						</p>
 					</div>
 				</div>
+				<Button>Save Changes</Button>
 			</div>
 		</>
 	);
