@@ -21,12 +21,12 @@ import {
 	Settings,
 	EyeOff,
 	Eye,
+	Stars,
 } from 'lucide-react';
 import { SignOutButton, useUser } from '@clerk/nextjs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useRouter } from 'next/navigation';
-
-type SubscriptionTier = 'FREE' | 'STARTER' | 'PRO';
+import { SubscriptionTier } from '@/lib/constants';
 
 interface UserInfo {
 	name: string;
@@ -38,7 +38,7 @@ interface UserInfo {
 const userInfo: UserInfo = {
 	name: 'John Doe',
 	email: 'john@example.com',
-	subscription: 'PRO',
+	subscription: 'BASIC',
 	joinedDate: 'January 2024',
 };
 
@@ -51,7 +51,7 @@ export default function AccountPage() {
 	const getSubscriptionBadge = (tier: SubscriptionTier) => {
 		const colors = {
 			FREE: 'bg-gray-100 text-gray-800',
-			STARTER: 'bg-blue-100 text-blue-800',
+			BASIC: 'bg-blue-100 text-blue-800',
 			PRO: 'bg-purple-100 text-purple-800',
 		};
 
@@ -81,7 +81,7 @@ export default function AccountPage() {
 					<p className='text-xs text-muted-foreground'>
 						The account you're loggedin with now.
 					</p>
-					<div className='rounded-md border border-input bg-background p-4  flex items-start justify-between'>
+					<div className='rounded-md border border-input bg-background p-4  flex items-start justify-between max-sm:flex-col-reverse'>
 						<div className='space-y-6'>
 							<div className='space-y-1'>
 								<label className='text-sm text-muted-foreground'>Name</label>
@@ -123,7 +123,7 @@ export default function AccountPage() {
 								</div>
 							</div>
 						</div>
-						<div className='flex flex-col items-center gap-2'>
+						<div className='flex flex-col max-sm:flex-col-reverse max-sm:mb-5 items-center gap-2'>
 							<Avatar className='h-20 w-20'>
 								<AvatarImage src={user?.imageUrl} />
 								<AvatarFallback>
@@ -151,9 +151,16 @@ export default function AccountPage() {
 							</label>
 							<div>{getSubscriptionBadge(userInfo.subscription)}</div>
 						</div>
-						<Button variant='outline' size='sm' className='w-full sm:w-auto'>
-							<Settings className='w-4 h-4 mr-2' />
-							Upgrade Subscription
+						<Button
+							variant='outline'
+							size='sm'
+							className='w-full sm:w-auto'
+							disabled={userInfo.subscription === 'PRO'}
+						>
+							<Stars className='w-4 h-4 mr-2' />
+							{userInfo.subscription === 'PRO'
+								? 'Already on the best plan'
+								: 'Upgrade Subscription'}
 						</Button>
 					</div>
 				</div>
