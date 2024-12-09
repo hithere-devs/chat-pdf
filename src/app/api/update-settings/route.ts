@@ -5,9 +5,24 @@ import { eq } from 'drizzle-orm';
 import { PLAN_DETALS } from '@/lib/constants';
 import type { SubscriptionTier, Models } from '@/lib/constants';
 
-export const POST = async (req: Request, res: Response) => {
+export const POST = async (req: Request) => {
 	try {
-		const { userId, plan, model, maxTokens } = await req.json();
+		let { userId, model, maxTokens, upgradePlan, plan } = await req.json();
+
+		let settingData: {
+			plan?: SubscriptionTier;
+			currentModel: Models;
+			maxTokens: number;
+		} = {
+			currentModel: model,
+			maxTokens: maxTokens,
+		};
+
+		// check if this is a plan upgrade call
+		if (upgradePlan) {
+			plan = upgradePlan;
+			settingData.plan = plan;
+		}
 
 		// Validate plan exists
 		if (!Object.keys(PLAN_DETALS).includes(plan)) {
@@ -39,11 +54,7 @@ export const POST = async (req: Request, res: Response) => {
 		// Update subscription
 		const updated = await db
 			.update(subscription)
-			.set({
-				plan: plan,
-				currentModel: model,
-				maxTokens: maxTokens,
-			})
+			.set(settingData)
 			.where(eq(subscription.userId, userId))
 			.returning();
 

@@ -8,27 +8,53 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from '@/components/ui/select';
-import { useState } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { MODELS, PLAN_DETALS } from '@/lib/constants';
-import { useMutation } from '@tanstack/react-query';
+import { MODELS, PLAN_DETALS, SubscriptionTier } from '@/lib/constants';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useAuth } from '@clerk/nextjs';
 
 export default function SettingsPage() {
+	const { userId } = useAuth();
 	const [temperature, setTemperature] = useState(0.7);
-	const planDetails = PLAN_DETALS['PRO'];
-	const [maxTokens, setMaxTokens] = useState(() => planDetails.maxTokens / 2);
+	const [plan, setPlan] = useState<SubscriptionTier>('FREE');
+	const [maxTokens, setMaxTokens] = useState(0);
 	const [model, setModel] = useState('gpt-3.5-turbo');
 
-	const { userId } = useAuth();
+	// Fetch subscription details
+	const { data: subscriptionData, isLoading } = useQuery({
+		queryKey: ['subscription', userId],
+		queryFn: async () => {
+			const response = await axios.post('/api/get-subscription', { userId });
+			return response.data;
+		},
+		enabled: !!userId,
+		retry: 1,
+		staleTime: 1000 * 60 * 50, // Cache for 5 minutes
+		refetchOnWindowFocus: false,
+		refetchInterval: 1000 * 60 * 50,
+	});
+
+	// Update state when subscription data is loaded
+	useEffect(() => {
+		if (subscriptionData?.subscription) {
+			const sub = subscriptionData.subscription;
+			setPlan(sub.plan as SubscriptionTier);
+			setModel(sub.currentModel);
+			setMaxTokens(sub.maxTokens);
+		}
+	}, [subscriptionData]);
+
+	const planDetails = PLAN_DETALS[plan];
 
 	const updateSettingsMutation = useMutation({
 		mutationFn: async () => {
 			const response = await axios.post('/api/update-settings', {
 				userId,
-				plan: 'PRO', // You might want to make this dynamic
+				plan,
 				model,
 				maxTokens,
 			});
@@ -43,10 +69,14 @@ export default function SettingsPage() {
 		},
 	});
 
-	const handleSaveSettings = () => {
-		updateSettingsMutation.mutate();
-		console.log(updateSettingsMutation.data);
-	};
+	if (isLoading) {
+		return (
+			<div className='p-4 space-y-6'>
+				<Skeleton className='h-8 w-[200px]' />
+				<Skeleton className='h-[400px] w-full max-w-xl' />
+			</div>
+		);
+	}
 
 	return (
 		<>
@@ -58,22 +88,18 @@ export default function SettingsPage() {
 					{/* Model Selection */}
 					<div className='space-y-2 max-w-xl'>
 						<label className='text-sm font-medium'>Select Chat Model</label>
-						<Select
-							defaultValue={model}
-							onValueChange={(value) => {
-								setModel(value);
-							}}
-						>
+						<Select value={model} onValueChange={(value) => setModel(value)}>
 							<SelectTrigger>
 								<SelectValue placeholder='Select model' />
 							</SelectTrigger>
 							<SelectContent>
-								{MODELS.map((model) => (
+								{MODELS.map((m) => (
 									<SelectItem
-										disabled={!planDetails.models.includes(model)}
-										value={model}
+										key={m}
+										disabled={!planDetails.models.includes(m)}
+										value={m}
 									>
-										{model}
+										{m}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -136,11 +162,12 @@ export default function SettingsPage() {
 						</p>
 					</div>
 				</div>
+
 				<Button
-					onClick={handleSaveSettings}
-					disabled={updateSettingsMutation.isPending}
+					onClick={() => updateSettingsMutation.mutate()}
+					disabled={updateSettingsMutation.isPending || isLoading}
 				>
-					Save Changes
+					{updateSettingsMutation.isPending ? 'Saving...' : 'Save Changes'}
 				</Button>
 			</div>
 		</>
