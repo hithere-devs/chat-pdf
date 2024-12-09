@@ -46,14 +46,14 @@ export function AppSidebar({ chats, chatId, ...props }: AppSidebarProps) {
 		navMain: [
 			{
 				title: 'Search',
-				url: '#',
+				url: '/search',
 				icon: Search,
 			},
-			{
-				title: 'Ask AI',
-				url: '#',
-				icon: Sparkles,
-			},
+			// {
+			// 	title: 'Ask AI',
+			// 	url: '#',
+			// 	icon: Sparkles,
+			// },
 			// {
 			// 	title: 'Home',
 			// 	url: '#',
@@ -74,7 +74,7 @@ export function AppSidebar({ chats, chatId, ...props }: AppSidebarProps) {
 			// },
 			{
 				title: 'Help',
-				url: '#',
+				url: 'mailto:hithere.azhar@gmail.com',
 				icon: MessageCircleQuestion,
 			},
 		],

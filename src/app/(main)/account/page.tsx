@@ -243,12 +243,13 @@ export default function AccountPage() {
 								variant='outline'
 								size='sm'
 								className='w-full sm:w-auto'
-								disabled={plan === 'PRO'}
+								// disabled={plan === 'PRO'}
+								disabled={true}
 							>
 								<Stars className='w-4 h-4 mr-2' />
 								{plan === 'PRO'
 									? 'Already on the best plan'
-									: 'Upgrade Subscription'}
+									: 'Upgrade to PRO - Coming Soon'}
 							</Button>
 						</div>
 					</div>

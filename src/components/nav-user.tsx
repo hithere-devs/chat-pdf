@@ -95,9 +95,9 @@ export function NavUser({
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
 						<DropdownMenuGroup>
-							<DropdownMenuItem>
+							<DropdownMenuItem disabled>
 								<Sparkles />
-								Upgrade to Pro
+								Upgrade to Pro - soon!
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />

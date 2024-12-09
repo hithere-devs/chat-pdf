@@ -1,12 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Bell } from 'lucide-react';
+import { Search as SearchIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type Props = {};
-
-const Notifications = (props: Props) => {
+const Search = () => {
 	return (
 		<div className='h-[92vh] flex flex-col items-center justify-center p-4'>
 			<motion.div
@@ -16,15 +14,19 @@ const Notifications = (props: Props) => {
 				className='text-center space-y-4'
 			>
 				<div className='flex justify-center'>
-					<Bell className='h-12 w-12 text-muted-foreground' />
+					<SearchIcon className='h-12 w-12 text-muted-foreground' />
 				</div>
-				<h1 className='text-2xl font-semibold'>No notifications yet!</h1>
+				<h1 className='text-2xl font-semibold'>Search Coming Soon</h1>
 				<p className='text-muted-foreground max-w-md mx-auto'>
-					When you get notifications, they'll show up here. Stay tuned!
+					We're working on an awesome search feature that will let you find
+					conversations across all your documents. Stay tuned!
+				</p>
+				<p className='text-sm text-muted-foreground'>
+					Currently in beta • Release expected soon
 				</p>
 			</motion.div>
 		</div>
 	);
 };
 
-export default Notifications;
+export default Search;
