@@ -36,7 +36,7 @@ export const messages = pgTable('messages', {
 export const subscription = pgTable('subscription', {
 	id: serial('id').primaryKey(),
 	userId: varchar('user_id', { length: 256 }).notNull(),
-	stripeId: varchar('stripe_id', { length: 256 }).notNull(),
+	stripeId: varchar('stripe_id', { length: 256 }),
 	plan: plansEnum('plan').notNull().default('FREE'),
 	currentModel: modelsEnum('current_model').notNull().default('gpt-3.5-turbo'),
 	maxTokens: integer('max_tokens').notNull().default(612),

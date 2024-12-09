@@ -10,10 +10,43 @@ import {
 } from '@/components/ui/select';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { MODELS, PLAN_DETALS } from '@/lib/constants';
+import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/nextjs';
 
 export default function SettingsPage() {
 	const [temperature, setTemperature] = useState(0.7);
-	const [maxTokens, setMaxTokens] = useState(2048);
+	const planDetails = PLAN_DETALS['PRO'];
+	const [maxTokens, setMaxTokens] = useState(() => planDetails.maxTokens / 2);
+	const [model, setModel] = useState('gpt-3.5-turbo');
+
+	const { userId } = useAuth();
+
+	const updateSettingsMutation = useMutation({
+		mutationFn: async () => {
+			const response = await axios.post('/api/update-settings', {
+				userId,
+				plan: 'PRO', // You might want to make this dynamic
+				model,
+				maxTokens,
+			});
+			return response.data;
+		},
+		retry: 0,
+		onSuccess: (data) => {
+			toast.success('Settings updated successfully');
+		},
+		onError: (error: any) => {
+			toast.error(error?.response?.data?.error || 'Failed to update settings');
+		},
+	});
+
+	const handleSaveSettings = () => {
+		updateSettingsMutation.mutate();
+		console.log(updateSettingsMutation.data);
+	};
 
 	return (
 		<>
@@ -25,15 +58,24 @@ export default function SettingsPage() {
 					{/* Model Selection */}
 					<div className='space-y-2 max-w-xl'>
 						<label className='text-sm font-medium'>Select Chat Model</label>
-						<Select defaultValue='gpt-3.5-turbo'>
+						<Select
+							defaultValue={model}
+							onValueChange={(value) => {
+								setModel(value);
+							}}
+						>
 							<SelectTrigger>
 								<SelectValue placeholder='Select model' />
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value='gpt-4o'>gpt-4o</SelectItem>
-								<SelectItem value='gpt-3.5-turbo'>gpt-3.5-turbo</SelectItem>
-								<SelectItem value='gpt-o1-mini'>gpt-o1-mini</SelectItem>
-								<SelectItem value='gpt-o1-preview'>gpt-o1-preview</SelectItem>
+								{MODELS.map((model) => (
+									<SelectItem
+										disabled={!planDetails.models.includes(model)}
+										value={model}
+									>
+										{model}
+									</SelectItem>
+								))}
 							</SelectContent>
 						</Select>
 					</div>
@@ -65,7 +107,7 @@ export default function SettingsPage() {
 						<label className='text-sm font-medium'>Maximum Tokens</label>
 						<Slider
 							defaultValue={[maxTokens]}
-							max={4096}
+							max={planDetails.maxTokens}
 							min={100}
 							step={128}
 							className='w-full'
@@ -74,7 +116,7 @@ export default function SettingsPage() {
 						<div className='flex justify-between text-xs text-muted-foreground'>
 							<span>Min: 100</span>
 							<span>Current: {maxTokens}</span>
-							<span>Max: 4096</span>
+							<span>Max: {planDetails.maxTokens}</span>
 						</div>
 						<p className='text-xs text-muted-foreground'>
 							Maximum number of tokens to generate in the response.
@@ -94,7 +136,12 @@ export default function SettingsPage() {
 						</p>
 					</div>
 				</div>
-				<Button>Save Changes</Button>
+				<Button
+					onClick={handleSaveSettings}
+					disabled={updateSettingsMutation.isPending}
+				>
+					Save Changes
+				</Button>
 			</div>
 		</>
 	);
